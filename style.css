@@ -13,7 +13,7 @@ body {
     height: 90vh;
     font-family: sans-serif;
     background-color: #d2d2d2;
-    margin-top: 80px;
+    margin-top: 50px;
     /* padding: 30px; */
 }
 
@@ -22,7 +22,8 @@ main {
 }
 
 header {
-    background-color: #fff;
+    /* background-color: #011530; */
+    background: linear-gradient(0deg, rgba(1,21,48,0) 0%, rgba(0, 0, 0,1) 30%);
     position: fixed;
     top: 0;
     left: 0;
@@ -30,7 +31,7 @@ header {
     height: 80px;
     display: flex;
     align-items: center;
-    box-shadow: 0 0 25px 0 black;
+    /* box-shadow: 0 0 25px 0 black; */
     z-index: 999;
 }
 
@@ -43,26 +44,63 @@ header li {
 }
 
 header li a {
-    color: #000;
+    color: #fff;
     text-decoration: none;
+}
+
+.search-container {
+    margin-left: 20px;
+    width: 50%;
+}
+
+.search {
+    width: 100%;
+    position: relative;
+    display: flex;
+}
+
+.searchTerm {
+    width: 100%;
+    border: 3px solid #ff914d;
+    border-right: none;
+    padding: 5px;
+    border-radius: 5px 0 0 5px;
+    outline: none;
+    color: #9DBFAF;
+}
+
+.searchTerm:focus{
+    color: #00B4CC;
+}
+
+.searchButton {
+    width: 40px;
+    height: 36px;
+    border: 1px solid #ff914d;
+    background: #ff914d;
+    text-align: center;
+    color: #fff;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    font-size: 20px;
 }
 
 .banner {
     width: 100%;
     position: relative;
-    height: 300px;
-    perspective: 100px;
+    /* height: 300px; */
+    /* perspective: 100px; */
     overflow: hidden;
 }
 .banner .banner-item {
     /* list-style: none; */
-    height: 300px;
+    height: 500px;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     opacity: 0;
     display: none;
-    animation: fadeIn 0.5s ease-out;
+    animation: fadeIn 1s ease-out;
 }
 .banner .banner-item.active {
     opacity: 1;
@@ -120,4 +158,14 @@ header li a {
 }
 .banner-item-details .meta span {
     margin-right: 5px;
+}
+
+@media only screen and (max-width: 768px) {
+    .banner .banner-item {
+        height: 300px;
+    }
+
+    .banner-item-details {
+        width: 100%;
+    }
 }
