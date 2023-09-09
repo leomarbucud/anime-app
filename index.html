@@ -10,16 +10,7 @@
     <body>
         <header>
             <img src="./img/logo.png" />
-            <nav>
-                <ul>
-                    <li>
-                        <a href="#">Home</a>
-                    </li>
-                    <li>
-                        <a href="#">About</a>
-                    </li>
-                </ul>
-            </nav>
+            <div>Anime App</div>
             <div class="search-container">
                 <div class="search">
                   <input type="text" class="searchTerm" placeholder="What are you looking for?">
@@ -29,11 +20,16 @@
                </div>
             </div>
         </header>
-        <main>
-            <div class="banner">
+        <main class="home">
+            <div class="banner"></div>
+            <div class="container">
+                <h2 class="title">Trending</h2>
+                <div class="trending"></div>
             </div>
-            <div class="trending">
-            </div>
+        </main>
+        <main class="search-result hide">
+            <div class="list"></div>
+            <nav class="page"></nav>
         </main>
         <script src="./script.js"></script>
     </body>
