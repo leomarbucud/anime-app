@@ -1,26 +1,15 @@
 const API = `https://kitsu.io/api/edge`;
+
+// get banner
 const banner = document.querySelector(`.banner`);
-const trending = document.querySelector(`.trending`);
-let bannerIndex = 1;
-
-// function to fetch trending anime
-async function getTrending() {
+async function getBanner() {
     const response = await fetch(`${API}/trending/anime`);
-    const data = await response.json();
-    trending.innerHTML = generateTrendingHTML(data.data);
-    banner.innerHTML = generateBannerHTML(data.data);
-    initBannerConrols();
-}
+    const json = await response.json();
 
-getTrending();
-
-// function to generate banner
-function generateBannerHTML(data) {
-    console.log(data)
     let html = `<ol>`;
-    data.forEach((item, i) => {
+    json.data.forEach((item, i) => {
         const d = item.attributes;
-        const c = i == 0 ? 'active' : ( i == data.length - 1 ? 'prev' : 'next');
+        const c = i == 0 ? 'active' : (i == json.data.length - 1 ? 'prev' : 'next');
         const description = d.synopsis.substring(0, 200);
         html += `
             <li class="banner-item ${c}" style="background-image: url('${d.coverImage.original}');">
@@ -38,7 +27,7 @@ function generateBannerHTML(data) {
                     </div>
                 </div>
             </li>
-        ` 
+        `;
     });
     html += `</ol>`;
     html += `<div class="controls">
@@ -46,38 +35,21 @@ function generateBannerHTML(data) {
                 <span class="next" data-val="1"><i class="fa fa-chevron-right"></i></span>
             </div>
     `;
-    return html;
-}
 
-// function to generate trending anime
-function generateTrendingHTML(data) {
-    let html = ``;
-    data.forEach((item) => {
-        const d = item.attributes;
-        html += `
-            <article class="trending-item">
-                <figure>
-                    <img src="${d.posterImage.tiny}" />
-                </figure>
-                <div class="trending-details">
-                    <span class="title">${d.canonicalTitle}</span>
-                </div>
-            </article>
-        ` 
-    });
-    return html;
-}
-function getCorrectBannerIndex(index) {
+    banner.innerHTML = html;
+
     const bannerItems = banner.querySelectorAll(`.banner-item`);
-    if( index > bannerItems.length ) {
-        return  1;
-    } else if( index < 1 ) {
-        return bannerItems.length;
+    let bannerIndex = 1;
+
+    const getCorrectBannerIndex = (index) => {
+        if( index > bannerItems.length ) {
+            return  1;
+        } else if( index < 1 ) {
+            return bannerItems.length;
+        }
+        return index; 
     }
-    return index; 
-}
-function initBannerConrols() {
-    const bannerItems = banner.querySelectorAll(`.banner-item`);
+
     const updateBanner = (val) => {
         bannerItems.forEach(b => {
             b.classList.remove('active', 'prev', 'next');
@@ -97,14 +69,88 @@ function initBannerConrols() {
             updateBanner(val);
         });
     });
+
     // automated
     setInterval(() => {
-        // bannerIndex++;
-        // updateBanner(bannerIndex);
+        bannerIndex++;
+        updateBanner(bannerIndex);
     }, 5000);
 }
 
-window.addEventListener('scroll', () => {
+getBanner();
+
+// get trending
+const trending = document.querySelector(`.trending`);
+async function getTrending() {
+    const response = await fetch(`${API}/anime?filter[status]=current&page[limit]=20&sort=-user_count`);
+    const json = await response.json();
+    let html = ``;
+    json.data.forEach((item) => {
+        const d = item.attributes;
+        const img = d.posterImage.medium || d.posterImage.original;
+        html += `
+            <article class="item anime"
+                data-title="${d.canonicalTitle}"
+                data-img="${img}"
+                data-desc='${d.synopsis}'
+                data-youtube="${d.youtubeVideoId}"
+            >
+                <figure>
+                    <img src="${img}" />
+                </figure>
+                <div class="details">
+                    <span class="title">${d.canonicalTitle}</span>
+                </div>
+            </article>
+        ` 
+    });
+    trending.innerHTML = html;
+}
+
+getTrending();
+
+function removeModal() {
+    if( document.querySelector(`#modal`) ) {
+        document.querySelector(`#modal`).remove();
+    }
+}
+
+document.addEventListener('click', function(e) {
+    const target = e.target.closest('.anime');
+    if( ! target ) return false;
+
+    removeModal();
+
+    const d = target.dataset;
+
+    let html = `
+        <div id="modal" class="modal-window">
+            <div>
+               <a href="#" title="Close" class="modal-close"><i class="fa fa-close"></i></a> 
+                <div class="modal-body">
+                    <div>
+                        <img src="${d.img}" />
+                        <a href="https://www.youtube.com/watch?v=${d.youtube}&mode=theatre" class="btn-watch" target="_blank"><i class="fa fa-play-circle"></i> Watch Trailer</a>
+                    </div>
+                    <div class="modal-desc">
+                        <h1>${d.title}</h1>
+                        <p>${d.desc}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('afterend', html);
+});
+
+document.addEventListener('click', function(e) {
+    const target = e.target.closest('.modal-close');
+    if( ! target ) return;
+    e.preventDefault();
+    removeModal();
+});
+
+window.addEventListener('scroll', function() {
     const body = document.querySelector('body')
     if( window.scrollY > 0 ) {
         body.classList.add('scroll');
@@ -114,19 +160,19 @@ window.addEventListener('scroll', () => {
 });
 
 const home = document.querySelector('.home');
-const searchTerm = document.querySelector('.searchTerm');
-const searchButton = document.querySelector('.searchButton');
+const searchTerm = document.querySelector('.search-term');
+const searchButton = document.querySelector('.search-button');
 const searchResult = document.querySelector(`.search-result`);
 
 searchButton.addEventListener('click', function() {
     home.classList.add('hide');
     searchResult.classList.remove('hide');
-    searchResult.querySelector('.list').innerHTML = 'Loading...'
     const text  = searchTerm.value;
     search(`${API}/anime?filter[text]=${text}`);
 });
 
 async function search(url) {
+    searchResult.querySelector('.list').innerHTML = 'Loading...'
     const response = await fetch(url);
     const data = await response.json();
     searchResult.querySelector('.list').innerHTML = generateSearchHTML(data.data); 
@@ -138,10 +184,16 @@ function generateSearchHTML(data) {
     let html = ``;
     data.forEach((item) => {
         const d = item.attributes;
+        const img = d.posterImage.medium || d.posterImage.original;
         html += `
-            <article class="search-item">
+            <article class="search-item anime"
+                data-title="${d.canonicalTitle}"
+                data-img="${img}"
+                data-desc='${d.synopsis}'
+                data-youtube="${d.youtubeVideoId}"
+            >
                 <figure>
-                    <img src="${d.posterImage.medium}" />
+                    <img src="${img}" />
                 </figure>
                 <div class="search-details">
                     <span class="title">${d.canonicalTitle}</span>
@@ -153,10 +205,19 @@ function generateSearchHTML(data) {
 }
 
 function generatePagination(links) {
-    let html = `
-        <a href="javascript: search('${links.first}');">First</a>
-        <a href="javascript: search('${links.last}');">Last</a>
-        <a href="javascript: search('${links.next}');">Next</a>
-    `;
+    let html = ``;
+    if( links.prev ) {
+        html += `<a href="javascript: search('${links.prev}');"><i class="fa fa-chevron-left"></i></a>`;
+    }
+    if( links.next ) {
+        html += `<a href="javascript: search('${links.next}');"><i class="fa fa-chevron-right"></i></a>`;
+    }
     return html;
 }
+const logo = document.querySelector('.logo');
+logo.addEventListener('click', function() {
+    console.log('click')
+    home.classList.remove('hide');
+    searchResult.classList.add('hide');
+    searchTerm.value = '';
+});
