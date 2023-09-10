@@ -159,6 +159,7 @@ window.addEventListener('scroll', function() {
     }
 });
 
+// search functions
 const home = document.querySelector('.home');
 const searchTerm = document.querySelector('.search-term');
 const searchButton = document.querySelector('.search-button');
@@ -178,7 +179,6 @@ async function search(url) {
     searchResult.querySelector('.list').innerHTML = generateSearchHTML(data.data); 
     searchResult.querySelector('.page').innerHTML = generatePagination(data.links);
 }
-
 
 function generateSearchHTML(data) {
     let html = ``;
@@ -214,9 +214,10 @@ function generatePagination(links) {
     }
     return html;
 }
+
+// click logo
 const logo = document.querySelector('.logo');
 logo.addEventListener('click', function() {
-    console.log('click')
     home.classList.remove('hide');
     searchResult.classList.add('hide');
     searchTerm.value = '';
