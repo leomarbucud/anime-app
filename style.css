@@ -56,16 +56,6 @@ header * {
     display: inline;
 }
 
-header li {
-    margin: 20px;
-}
-
-header li a {
-    color: var(--fg);
-    text-decoration: none;
-    font-size: 0.75em;
-}
-
 /* search */
 
 .search-container {

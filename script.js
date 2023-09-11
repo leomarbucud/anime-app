@@ -22,7 +22,7 @@ async function getBanner() {
                             <span><i class="fa fa-hourglass-start"></i> ${d.episodeLength}m</div>
                         <div class="dec">${description}...</div>
                         <div class="action">
-                            <a href="https://www.youtube.com/watch?v=${d.youtubeVideoId}&mode=theatre" class="btn-watch" target="_blank"><i class="fa fa-play-circle"></i> Watch Trailer</a>
+                            <a href="https://www.youtube.com/watch?v=${d.youtubeVideoId}" class="btn-watch" target="_blank"><i class="fa fa-play-circle"></i> Watch Trailer</a>
                         </div>
                     </div>
                 </div>
